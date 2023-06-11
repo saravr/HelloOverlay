@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">HelloOverlay</string>
+    <string name="displaying_over_other_apps">Displaying over other apps!</string>
+    <string name="remove">Remove</string>
 </resources>

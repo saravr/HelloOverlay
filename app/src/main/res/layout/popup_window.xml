@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="4dp"
-    android:background="@null">
+    android:layout_gravity="end">
 
     <androidx.cardview.widget.CardView
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="5dp">
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="#99000000">
 
         <LinearLayout
             android:padding="10dp"
@@ -24,7 +22,8 @@
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Displaying over other apps!"
+                android:text="@string/displaying_over_other_apps"
+                android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:padding="10dp"/>
@@ -33,7 +32,7 @@
                 android:id="@+id/window_close"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Remove" />
+                android:text="@string/remove" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
