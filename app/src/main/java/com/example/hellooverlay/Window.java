@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -44,12 +45,20 @@ public class Window {
         // set onClickListener on the remove button, which removes
         // the view from the window
         mView.findViewById(R.id.window_close).setOnClickListener(view -> close());
-        ///mView.setBackgroundColor(0xD3D3D3);
         // Define the position of the
         // window within the screen
         mParams.gravity = Gravity.END;
         mWindowManager = (WindowManager)context.getSystemService(WINDOW_SERVICE);
 
+        mView.findViewById(R.id.btn_move).setOnClickListener(view -> {
+            if (mParams.gravity == Gravity.END) {
+                mParams.gravity = Gravity.START;
+            } else {
+                mParams.gravity = Gravity.END;
+            }
+            mView.setLayoutParams(mParams);
+            mWindowManager.updateViewLayout(mView, mParams);
+        });
     }
 
     public void open() {
