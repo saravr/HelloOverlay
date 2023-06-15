@@ -1,4 +1,4 @@
-package com.example.hellooverlay
+package com.example.overlay
 
 import android.content.Context
 import android.graphics.PixelFormat
