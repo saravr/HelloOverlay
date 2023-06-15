@@ -4,7 +4,26 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewTreeLifecycleOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 class OverlayWindow(private val context: Context) {
     private val view: View
@@ -14,7 +33,7 @@ class OverlayWindow(private val context: Context) {
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             params = WindowManager.LayoutParams( // Shrink the window to wrap the content rather than filling the screen
-                400,
+                500,
                 WindowManager.LayoutParams.MATCH_PARENT,  // Display it on top of other application windows
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Don't let it grab the input focus
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,  // Make the underlying application window visible
@@ -23,20 +42,32 @@ class OverlayWindow(private val context: Context) {
             )
         }
 
-        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        view = layoutInflater.inflate(R.layout.popup_window, null)
-        view.findViewById<View>(R.id.window_close).setOnClickListener { close() }
         params.gravity = Gravity.END
-        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        view.findViewById<View>(R.id.btn_move).setOnClickListener {
-            if (params.gravity == Gravity.END) {
-                params.gravity = Gravity.START
-            } else {
-                params.gravity = Gravity.END
-            }
-            this.view.layoutParams = params
-            windowManager.updateViewLayout(this.view, params)
+
+        view = ComposeView(context)
+        val self = this
+        view.setContent {
+            PopUp(
+                moveClicked = {
+                    if (params.gravity == Gravity.END) {
+                        params.gravity = Gravity.START
+                    } else {
+                        params.gravity = Gravity.END
+                    }
+                    this.view.layoutParams = params
+                    self.windowManager.updateViewLayout(this.view, params)
+                }, clearClicked = {
+                    close()
+                }
+            )
         }
+
+        val lifecycleOwner = OverlayLifecycleOwner()
+        lifecycleOwner.performRestore(null)
+        lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        ViewTreeLifecycleOwner.set(view, lifecycleOwner)
+        view.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
     fun open() {
@@ -65,7 +96,29 @@ class OverlayWindow(private val context: Context) {
         }
     }
 
+    @Composable
+    fun PopUp(moveClicked: () -> Unit, clearClicked: () -> Unit) {
+        Column(modifier = Modifier
+            .background(Color.Transparent.copy(alpha = 0.2f))
+            .fillMaxSize()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                IconButton(onClick = {
+                    moveClicked()
+                }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Move around", tint = Color.White)
+                }
+                IconButton(onClick = { clearClicked() }) {
+                    Icon(Icons.Default.Clear, contentDescription = "Clear", tint = Color.White)
+                }
+            }
+            Text("Hello", modifier = Modifier
+                .padding(40.dp)
+                .background(Color.Yellow))
+        }
+    }
+
     companion object {
-        private const val TAG = "Window"
+        private const val TAG = "OverlayWindow"
     }
 }
