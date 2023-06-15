@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_start).setOnClickListener {
             if (isServiceRunning(this, OverlayService::class.java)) {
-                ///stopService()
+                stopService()
             } else {
                 checkOverlayPermission()
                 startService()

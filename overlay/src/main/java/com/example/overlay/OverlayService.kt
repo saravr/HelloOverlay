@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 
 class OverlayService : Service() {
+    private lateinit var overlayWindow: OverlayWindow
     override fun onBind(intent: Intent): IBinder? {
         throw UnsupportedOperationException("Not yet implemented")
     }
@@ -25,12 +26,17 @@ class OverlayService : Service() {
         }
 
         // create an instance of Window class and display the content on screen
-        val overlayWindow = OverlayWindow(this)
+        overlayWindow = OverlayWindow(this)
         overlayWindow.open()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        overlayWindow.close()
     }
 
     // for android version >=O we need to create custom notification stating

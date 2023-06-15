@@ -52,7 +52,7 @@ class OverlayWindow(private val context: Context) {
         }
     }
 
-    private fun close() {
+    fun close() {
         try {
             (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(view)
             view.invalidate()
