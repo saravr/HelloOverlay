@@ -20,7 +20,7 @@ class OverlayService : Service() {
         super.onCreate()
         // create the custom or default notification based on the android version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startMyOwnForeground()
+            startOverlayForeground()
         } else {
             startForeground(1, Notification())
         }
@@ -42,17 +42,17 @@ class OverlayService : Service() {
     // for android version >=O we need to create custom notification stating
     // foreground service is running
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun startMyOwnForeground() {
-        val NOTIFICATION_CHANNEL_ID = "example.permanence"
+    private fun startOverlayForeground() {
+        val notificationChannelId = "example.permanence"
         val channelName = "Background Service"
         val chan = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
+            notificationChannelId,
             channelName,
             NotificationManager.IMPORTANCE_MIN
         )
         val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
-        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(this, notificationChannelId)
         val notification = notificationBuilder.setOngoing(true)
             .setContentTitle("Service running")
             .setContentText("Displaying over other apps") // this is important, otherwise the notification will show the way
