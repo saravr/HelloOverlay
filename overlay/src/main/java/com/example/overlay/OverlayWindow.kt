@@ -1,6 +1,7 @@
 package com.example.overlay
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.Log
@@ -13,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.flow.Flow
+
 
 class OverlayWindow(private val context: Context, data: Flow<List<String>>) {
     private val view: View
@@ -77,10 +79,12 @@ class OverlayWindow(private val context: Context, data: Flow<List<String>>) {
         try {
             (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(view)
             view.invalidate()
-            (view.parent as ViewGroup).removeAllViews()
+            (view.parent as? ViewGroup)?.removeAllViews()
 
             // the above steps are necessary when you are adding and removing
             // the view simultaneously, it might give some exceptions
+            val overlayService = Intent(context, OverlayService::class.java)
+            context.stopService(overlayService)
         } catch (e: Exception) {
             Log.d(TAG, e.toString())
         }
