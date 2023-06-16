@@ -37,9 +37,7 @@ class OverlayService : Service() {
         CoroutineScope(Dispatchers.Main).launch {
             repeat(1000) {
                 items.add("Element $it")
-                val yyy = mutableListOf<String>()
-                yyy.addAll(items)
-                itemList.emit(yyy)
+                itemList.emit(items.toMutableList())
                 delay(1000)
             }
         }
