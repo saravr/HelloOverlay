@@ -46,10 +46,11 @@ fun PopUp(data: Flow<List<String>>, moveClicked: () -> Unit, clearClicked: () ->
             items(
                 dataItems
             ) {
-                Text(it, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(40.dp)
-                    .background(Color.Yellow), style = MaterialTheme.typography.h5)
+                Text(
+                    it,
+                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    style = MaterialTheme.typography.body1
+                )
                 Divider()
             }
         }
