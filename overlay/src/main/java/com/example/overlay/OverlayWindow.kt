@@ -8,15 +8,24 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flowOf
 
-class OverlayWindow(private val context: Context) {
+class OverlayWindow(private val context: Context /*, data: Flow<List<String>>*/) {
     private val view: View
     private lateinit var params: WindowManager.LayoutParams
     private val windowManager: WindowManager
+    private val items = mutableListOf<String>()
+    private var xxx = MutableStateFlow<List<String>>(listOf())
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -36,6 +45,7 @@ class OverlayWindow(private val context: Context) {
         val self = this
         view.setContent {
             PopUp(
+                xxx,
                 moveClicked = {
                     if (params.gravity == Gravity.END) {
                         params.gravity = Gravity.START
@@ -50,6 +60,16 @@ class OverlayWindow(private val context: Context) {
             )
         }
 
+        CoroutineScope(Dispatchers.Main).launch {
+            repeat(1000) {
+                items.add("Element $it")
+                val yyy = mutableListOf<String>()
+                yyy.addAll(items)
+                xxx.emit(yyy)
+                println("++++ UPD: $it, sz ${items.size}")
+                delay(1000)
+            }
+        }
         val lifecycleOwner = OverlayLifecycleOwner()
         lifecycleOwner.performRestore(null)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
