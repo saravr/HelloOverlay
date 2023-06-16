@@ -13,23 +13,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @Composable
 fun PopUp(data: Flow<List<String>>, moveClicked: () -> Unit, clearClicked: () -> Unit) {
     val dataItems by data.collectAsState(listOf())
-    val state = rememberLazyListState()
-
-    println("++++ SHOWING A: ${dataItems.size}")
-    LaunchedEffect(dataItems.size) {
-        println("++++ SHOWING B: ${dataItems.size}")
-        if (dataItems.isNotEmpty()) {
-            state.animateScrollToItem(dataItems.size)
-        }
-    }
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier
         .background(Color.Transparent.copy(alpha = 0.2f))
@@ -46,11 +37,15 @@ fun PopUp(data: Flow<List<String>>, moveClicked: () -> Unit, clearClicked: () ->
             }
         }
 
-        LazyColumn {
-            items(dataItems, key = {
-                it
-            }) {
-                println("++++ SHOWING C: $it - ${dataItems.size}")
+        LazyColumn(state = listState) {
+            coroutineScope.launch { // TODO!!!
+                if (dataItems.size > 6) {
+                    listState.scrollToItem(dataItems.size - 1)
+                }
+            }
+            items(
+                dataItems
+            ) {
                 Text(it, modifier = Modifier
                     .fillMaxWidth()
                     .padding(40.dp)
