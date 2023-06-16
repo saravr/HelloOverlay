@@ -9,13 +9,14 @@ import android.os.Build
 import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class OverlayService : Service() {
     private lateinit var overlayWindow: OverlayWindow
+    private val items = mutableListOf<String>()
+    private var itemList = MutableStateFlow<List<String>>(listOf())
+
     override fun onBind(intent: Intent): IBinder? {
         throw UnsupportedOperationException("Not yet implemented")
     }
@@ -30,8 +31,18 @@ class OverlayService : Service() {
         }
 
         // create an instance of Window class and display the content on screen
-        overlayWindow = OverlayWindow(this)
+        overlayWindow = OverlayWindow(this, itemList)
         overlayWindow.open()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            repeat(1000) {
+                items.add("Element $it")
+                val yyy = mutableListOf<String>()
+                yyy.addAll(items)
+                itemList.emit(yyy)
+                delay(1000)
+            }
+        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
